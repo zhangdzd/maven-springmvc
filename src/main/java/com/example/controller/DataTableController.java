@@ -2,7 +2,9 @@ package com.example.controller;
 
 
 
+import com.example.pojo.Person;
 import com.example.pojo.User;
+import com.example.service.PersonServiceImpl;
 import com.example.service.UserServiceImpl;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -11,8 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import util.JdbcUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,15 +26,19 @@ public class DataTableController {
 
     @Autowired
     private UserServiceImpl userServiceImp;
+    @Autowired
+    private PersonServiceImpl personService;
     @RequestMapping(value="tableDemoAjax",produces = "application/json;charset=utf-8")
     @ResponseBody
-    public String tableDemoAjax(@RequestParam String aoData) {
+    public String tableDemoAjax(@RequestParam String aoData,HttpServletRequest request) {
+        String department = request.getParameter("nodeId");
         JSONArray jsonarray = JSONArray.fromObject(aoData);
         String sEcho = null;      //????????????
         String sSearch = null;
         int iDisplayStart = 0;    // ???????
         int iDisplayLength = 0;   // ??????????
-        List<User> lst = new ArrayList<User>();
+    //    List<User> lst = new ArrayList<User>();      //查询User表
+        List<Person> lst = new ArrayList<Person>();   //查询person表
 
 
         //???????????????????????????????????????????????????????
@@ -58,16 +64,23 @@ public class DataTableController {
         }
 */
 
-        if(sSearch.equals("")){
+        /*if(sSearch.equals("")){
             lst = userServiceImp.getAllOrder();
         }else{
-            //  String sql = "select * from i_user2 where username like '%"+sSearch+"%' or password like '%"+sSearch+"%'";
-            //  List<User> lst = new ArrayList<User>();
             lst = userServiceImp.findByIdOrUsername(sSearch);
-        }
-        for (User user:lst){
-            System.out.print("*********************"+user);
-            System.out.println(user.getId()+user.getPassword()+user.getUsername());
+        }*/
+
+
+
+       /* if(sSearch.equals("")){
+            lst =  personService.getAll();
+        }else {
+            lst = personService.getPersonByDep(department);
+        }*/
+        if(department!=null&&!department.equals("1")){
+            lst = personService.getPersonByDep(department);
+        }else{
+            lst = personService.getAll();
         }
         JSONObject getObj = new JSONObject();
         System.out.println("sEcho:"+sEcho);
